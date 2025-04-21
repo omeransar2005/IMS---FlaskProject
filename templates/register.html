@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Your App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .register-header {
+            background-color: var(--secondary-color);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .register-header h2 {
+            margin: 0;
+            color: #5a5c69;
+            font-weight: 700;
+            font-size: 1.75rem;
+        }
+
+        .register-body {
+            padding: 30px;
+        }
+
+        .form-floating {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-floating input {
+            border-radius: 5px;
+            border: 1px solid #d1d3e2;
+            padding: 1.2rem 1rem;
+        }
+
+        .form-floating label {
+            color: #858796;
+        }
+
+        .btn-register {
+            background-color: #36b9cc;
+            border-color: #36b9cc;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-register:hover {
+            background-color: #2c9faf;
+            border-color: #2c9faf;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group-text {
+            background-color: var(--secondary-color);
+            border: 1px solid #d1d3e2;
+            color: #6e707e;
+        }
+
+        .error-message {
+            color: #e74a3b;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            position: absolute;
+            bottom: -18px;
+            left: 0;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #858796;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            background-color: #36b9cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 15px auto;
+        }
+
+        .has-error input {
+            border-color: #e74a3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="brand-logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p class="text-muted">Please fill in the information below</p>
+        </div>
+
+        <div class="register-body">
+            <form method="POST" action="{{ url_for('register') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-floating mb-3 {{ 'has-error' if form.username.errors }}">
+                    {{ form.username(class="form-control", id="floatingUsername", placeholder="Username") }}
+                    <label for="floatingUsername">Username</label>
+                    {% if form.username.errors %}
+                        {% for error in form.username.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="form-floating mb-3 {{ 'has-error' if form.password.errors }}">
+                    {{ form.password(class="form-control", id="floatingPassword", placeholder="Password") }}
+                    <label for="floatingPassword">Password</label>
+                    {% if form.password.errors %}
+                        {% for error in form.password.errors %}
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {{ form.submit(class="btn btn-register", value="Create Account") }}
+            </form>
+
+            <div class="login-link">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

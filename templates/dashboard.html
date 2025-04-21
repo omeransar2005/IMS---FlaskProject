@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApparelSync | Clothing Inventory Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #36b9cc;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+
+        body {
+            background-color: #f2f6fc;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .menu-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .menu-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eaedf3;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--dark-color);
+        }
+
+        .menu-item:hover {
+            background-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .menu-text {
+            font-weight: 500;
+            flex-grow: 1;
+        }
+
+        .menu-shortcut {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-radius: 3px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            background-color: var(--light-color);
+            padding: 10px 20px;
+            border-bottom: 1px solid #eaedf3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-footer {
+            padding: 15px;
+            text-align: center;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <div class="menu-header">
+            <h1><i class="fas fa-tshirt me-2"></i> ApparelSync</h1>
+            <div class="mt-2">Clothing Inventory Management System</div>
+        </div>
+
+        <div class="user-info">
+            <div>
+                <i class="fas fa-user-circle me-2"></i>
+                <span>Welcome, {{ current_user.username }}</span>
+            </div>
+            <a href="{{ url_for("logout") }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout
+            </a>
+        </div>
+
+        <a href="{{ url_for('view_inventory') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-boxes"></i></div>
+            <div class="menu-text">View Inventory</div>
+        </a>
+
+        <a href="{{ url_for('add_item') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-plus-circle"></i></div>
+            <div class="menu-text">Add Item Record</div>
+        </a>
+
+        <a href="{{ url_for('update_item_record') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-edit"></i></div>
+            <div class="menu-text">Update Item Record</div>
+        </a>
+
+        <a href="{{ url_for('delete_item') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-trash"></i></div>
+            <div class="menu-text">Delete Item Record</div>
+        </a>
+
+        <a href="{{ url_for('search') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-search"></i></div>
+            <div class="menu-text">Search an Item</div>
+        </a>
+
+        <a href="{{ url_for('sales_report') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="menu-text">Generate Sales Report</div>
+        </a>
+
+        <a href="{{ url_for('add_sales') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-cash-register"></i></div>
+            <div class="menu-text">Add Sales Record</div>
+        </a>
+
+        <a href="{{ url_for('low_stock') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="menu-text">Low Stock Alerts</div>
+        </a>
+
+        <a href="{{ url_for('apply_discount') }}" class="menu-item">
+            <div class="menu-icon"><i class="fas fa-tag"></i></div>
+            <div class="menu-text">Apply Discount</div>
+        </a>
+
+        <div class="menu-footer">
+            &copy; 2025 ApparelSync. All rights reserved.
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
