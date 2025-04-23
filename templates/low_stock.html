@@ -287,7 +287,6 @@
                                     <th>Status</th>
                                     <th>Price</th>
                                     <th>Alert Date</th>
-                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -312,13 +311,6 @@
                                     </td>
                                     <td>${{ "%.2f"|format(alert.item.price) }}</td>
                                     <td>{{ alert.alert_date.strftime('%Y-%m-%d') }}</td>
-                                    <td class="d-flex gap-2">
-                                        <a href="{{ url_for('update_item_record') }}?id={{ alert.item_id }}" class="btn action-btn btn-restock">Restock</a>
-                                        <form action="{{ url_for('resolve_low_stock') }}" method="post">
-                                            <input type="hidden" name="alert_id" value="{{ alert.id }}">
-                                            <button type="submit" class="btn action-btn btn-resolve">Resolve</button>
-                                        </form>
-                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79d386bc-f78f-4290-8f58-99f637d3c3bc" name="Changes" comment="Initialize Flask project with user authentication and inventory management features">
+    <list default="true" id="79d386bc-f78f-4290-8f58-99f637d3c3bc" name="Changes" comment="Update workspace configuration for improved coverage tracking and remove unnecessary change entries">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instance/database.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/database.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/low_stock.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/low_stock.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/sales_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/sales_report.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,6 +155,7 @@
       <workItem from="1745379924395" duration="1294000" />
       <workItem from="1745384493357" duration="163000" />
       <workItem from="1745391685996" duration="453000" />
+      <workItem from="1745413998726" duration="1215000" />
     </task>
     <task id="LOCAL-00001" summary="Initialize Flask project with user authentication and inventory management features">
       <option name="closed" value="true" />
@@ -162,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1745215419420</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Update workspace configuration for improved coverage tracking and remove unnecessary change entries">
+      <option name="closed" value="true" />
+      <created>1745404391607</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1745404391607</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -170,11 +181,12 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initialize Flask project with user authentication and inventory management features" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initialize Flask project with user authentication and inventory management features" />
+    <MESSAGE value="Update workspace configuration for improved coverage tracking and remove unnecessary change entries" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update workspace configuration for improved coverage tracking and remove unnecessary change entries" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/IMS___FlaskProject$wifi.coverage" NAME="wifi Coverage Results" MODIFIED="1744082971967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/OneDrive/Desktop" />
-    <SUITE FILE_PATH="coverage/IMS___FlaskProject$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1745403838980" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/IMS___FlaskProject$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1745415221760" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/IMS___FlaskProject$IMS___FlaskProject.coverage" NAME="IMS - FlaskProject Coverage Results" MODIFIED="1744444643020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
