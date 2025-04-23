@@ -1,8 +1,10 @@
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import login_user, login_required, logout_user
 from app import app, db, bcrypt
-from models import User, InventoryItem
+from models import User, InventoryItem, Sale, LowStock
 from forms import RegisterForm, LoginForm
+from datetime import datetime
+
 
 @app.route('/')
 def home():
@@ -26,12 +28,22 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        new_user = User(username=form.username.data, password=hashed_password)
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        new_user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=hashed_password
+        )
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
+
+
+@app.route('/features')
+def features():
+    return render_template('features.html')
 
 
 @app.route('/dashboard')
@@ -65,7 +77,17 @@ def add_item():
         item = InventoryItem(item_name=name, quantity=quantity, price=price)
         db.session.add(item)
         db.session.commit()
-        flash('Item added successfully!')
+
+        # Check if new item is already below threshold
+        threshold = 10  # Default threshold
+        if quantity < threshold:
+            low_stock_alert = LowStock(item_id=item.id, threshold=threshold)
+            db.session.add(low_stock_alert)
+            db.session.commit()
+            flash('Item added successfully but it is below the stock threshold!')
+        else:
+            flash('Item added successfully!')
+
         return redirect(url_for('view_inventory'))
     return render_template('add_item.html')
 
@@ -77,11 +99,28 @@ def update_item_record():
         item_id = int(request.form['item_id'])
         item = InventoryItem.query.get(item_id)
         if item:
+            old_quantity = item.quantity
             item.item_name = request.form['item_name']
             item.quantity = int(request.form['quantity'])
             item.price = float(request.form['price'])
+
+            # Check if item quantity is now below threshold
+            threshold = 10  # Default threshold
+            if item.quantity < threshold and old_quantity >= threshold:
+                low_stock_alert = LowStock(item_id=item.id, threshold=threshold)
+                db.session.add(low_stock_alert)
+                flash('Item updated successfully! Note: Item is now below stock threshold.')
+            # Check if item was previously below threshold but now is not
+            elif item.quantity >= threshold and old_quantity < threshold:
+                # Resolve any existing alerts
+                low_stock_alerts = LowStock.query.filter_by(item_id=item.id, resolved=False).all()
+                for alert in low_stock_alerts:
+                    alert.resolved = True
+                flash('Item updated successfully! Stock levels now adequate.')
+            else:
+                flash('Item updated successfully!')
+
             db.session.commit()
-            flash('Item updated successfully!')
         else:
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
@@ -96,9 +135,12 @@ def delete_item():
         item_id = int(request.form['item_id'])
         item = InventoryItem.query.get(item_id)
         if item:
+            # Delete related sales and low stock alerts
+            Sale.query.filter_by(item_id=item_id).delete()
+            LowStock.query.filter_by(item_id=item_id).delete()
             db.session.delete(item)
             db.session.commit()
-            flash('Item deleted successfully!')
+            flash('Item and all related records deleted successfully!')
         else:
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
@@ -123,9 +165,28 @@ def search():
 @app.route('/dashboard/sales_report', methods=['GET', 'POST'])
 @login_required
 def sales_report():
-    inventory = InventoryItem.query.all()
-    total_sales = sum(item.sales * (item.price - (item.price * item.discount / 100)) for item in inventory)
-    return render_template('sales_report.html', inventory=inventory, total_sales=total_sales)
+    sales = Sale.query.all()
+
+    # Calculate total sales
+    total_sales = sum(
+        (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in sales)
+
+    # Group sales by item for reporting
+    items_with_sales = []
+    for item in InventoryItem.query.all():
+        item_sales = Sale.query.filter_by(item_id=item.id).all()
+        if item_sales:
+            total_quantity = sum(sale.quantity for sale in item_sales)
+            total_revenue = sum(
+                (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in
+                item_sales)
+            items_with_sales.append({
+                'item': item,
+                'total_quantity': total_quantity,
+                'total_revenue': total_revenue
+            })
+
+    return render_template('sales_report.html', sales=sales, items_with_sales=items_with_sales, total_sales=total_sales)
 
 
 @app.route('/dashboard/add_sales', methods=['GET', 'POST'])
@@ -135,23 +196,83 @@ def add_sales():
         item_id = int(request.form['item_id'])
         sold_qty = int(request.form['sold_quantity'])
         item = InventoryItem.query.get(item_id)
+
         if item and item.quantity >= sold_qty:
+            # Update inventory quantity
             item.quantity -= sold_qty
-            item.sales += sold_qty
+
+            # Record the sale with current price and discount
+            new_sale = Sale(
+                item_id=item_id,
+                quantity=sold_qty,
+                price_at_sale=item.price,
+                discount_at_sale=item.discount
+            )
+            db.session.add(new_sale)
+
+            # Check if stock is now low after this sale
+            threshold = 10  # Default threshold
+            if item.quantity < threshold:
+                # Check if there's already an unresolved alert
+                existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
+                if not existing_alert:
+                    low_stock_alert = LowStock(item_id=item_id, threshold=threshold)
+                    db.session.add(low_stock_alert)
+                flash('Sales recorded! Warning: Item is now below stock threshold.')
+            else:
+                flash('Sales recorded successfully!')
+
             db.session.commit()
-            flash('Sales updated!')
         else:
             flash('Insufficient stock or item not found.')
         return redirect(url_for('view_inventory'))
-    return render_template('add_sales.html')
+
+    inventory = InventoryItem.query.all()
+    return render_template('add_sales.html', inventory=inventory)
 
 
-@app.route('/dashboard/low_stock', methods=['GET', 'POST'])
+@app.route('/dashboard/low_stock', methods=['GET'])
 @login_required
 def low_stock():
-    threshold = 10
-    low_stock_items = InventoryItem.query.filter(InventoryItem.quantity < threshold).all()
-    return render_template('low_stock.html', items=low_stock_items)
+    # Get all current (unresolved) low stock alerts
+    low_stock_alerts = LowStock.query.filter_by(resolved=False).all()
+
+    # Get items that are currently below threshold but might not have alerts yet
+    threshold = 10  # Default threshold
+    low_inventory = InventoryItem.query.filter(InventoryItem.quantity < threshold).all()
+
+    # Create a set of item IDs that already have alerts
+    alerted_item_ids = {alert.item_id for alert in low_stock_alerts}
+
+    # Create alerts for items that are below threshold but don't have alerts
+    for item in low_inventory:
+        if item.id not in alerted_item_ids:
+            new_alert = LowStock(item_id=item.id, threshold=threshold)
+            db.session.add(new_alert)
+            alerted_item_ids.add(item.id)
+
+    if alerted_item_ids:
+        db.session.commit()
+        # Refresh the alerts query to include newly created alerts
+        low_stock_alerts = LowStock.query.filter_by(resolved=False).all()
+
+    return render_template('low_stock.html', alerts=low_stock_alerts)
+
+
+@app.route('/dashboard/resolve_low_stock', methods=['POST'])
+@login_required
+def resolve_low_stock():
+    alert_id = int(request.form['alert_id'])
+    alert = LowStock.query.get(alert_id)
+
+    if alert:
+        alert.resolved = True
+        db.session.commit()
+        flash('Low stock alert marked as resolved.')
+    else:
+        flash('Alert not found.')
+
+    return redirect(url_for('low_stock'))
 
 
 @app.route('/dashboard/apply_discount', methods=['GET', 'POST'])
@@ -168,4 +289,26 @@ def apply_discount():
         else:
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
-    return render_template('apply_discount.html')
+
+    inventory = InventoryItem.query.all()
+    return render_template('apply_discount.html', inventory=inventory)
+
+
+@app.route('/dashboard/view_sales_history', methods=['GET'])
+@login_required
+def view_sales_history():
+    item_id = request.args.get('item_id')
+
+    if item_id:
+        # View sales history for a specific item
+        item = InventoryItem.query.get(int(item_id))
+        if item:
+            sales = Sale.query.filter_by(item_id=int(item_id)).order_by(Sale.sale_date.desc()).all()
+            return render_template('sales_history.html', item=item, sales=sales)
+        else:
+            flash('Item not found.')
+            return redirect(url_for('view_inventory'))
+    else:
+        # View all sales history
+        sales = Sale.query.order_by(Sale.sale_date.desc()).all()
+        return render_template('sales_history.html', sales=sales)

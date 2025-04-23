@@ -298,7 +298,6 @@
                                     <th>Price</th>
                                     <th>Discount</th>
                                     <th>Discounted Price</th>
-                                    <th>Sales</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -326,7 +325,6 @@
                                             ${{ "%.2f"|format(item.price) }}
                                         {% endif %}
                                     </td>
-                                    <td>{{ item.sales }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

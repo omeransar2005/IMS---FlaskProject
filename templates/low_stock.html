@@ -139,6 +139,17 @@
             color: white;
         }
 
+        .btn-resolve {
+            background-color: #1cc88a;
+            color: white;
+            border: none;
+        }
+
+        .btn-resolve:hover {
+            background-color: #15a879;
+            color: white;
+        }
+
         .alert-count {
             position: absolute;
             top: -10px;
@@ -208,10 +219,10 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ url_for('low_stock') }}">
                             Low Stock
-                            {% if items %}
+                            {% if alerts %}
                             <span class="position-relative">
                                 <i class="fas fa-bell"></i>
-                                <span class="alert-count">{{ items|length }}</span>
+                                <span class="alert-count">{{ alerts|length }}</span>
                             </span>
                             {% else %}
                             <i class="fas fa-bell"></i>
@@ -250,7 +261,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-6">
                             <h4 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Items</h4>
-                            <h2>{{ items|length }}</h2>
+                            <h2>{{ alerts|length }}</h2>
                         </div>
                         <div class="col-md-6 text-md-end">
                             <p class="mb-1">Threshold Level</p>
@@ -265,42 +276,48 @@
                 </div>
 
                 <div class="table-responsive">
-                    {% if items %}
+                    {% if alerts %}
                         <table class="inventory-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Alert ID</th>
+                                    <th>Item ID</th>
                                     <th>Item Name</th>
                                     <th>Current Stock</th>
                                     <th>Status</th>
                                     <th>Price</th>
-                                    <th>Sales</th>
+                                    <th>Alert Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in items %}
+                                {% for alert in alerts %}
                                 <tr>
-                                    <td>{{ item.id }}</td>
-                                    <td>{{ item.item_name }}</td>
+                                    <td>{{ alert.id }}</td>
+                                    <td>{{ alert.item_id }}</td>
+                                    <td>{{ alert.item.item_name }}</td>
                                     <td>
-                                        {% if item.quantity <= 5 %}
-                                            <span class="critical-level">{{ item.quantity }}</span>
+                                        {% if alert.item.quantity <= 5 %}
+                                            <span class="critical-level">{{ alert.item.quantity }}</span>
                                         {% else %}
-                                            <span class="warning-level">{{ item.quantity }}</span>
+                                            <span class="warning-level">{{ alert.item.quantity }}</span>
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if item.quantity <= 5 %}
+                                        {% if alert.item.quantity <= 5 %}
                                             <span class="badge badge-stock badge-low">Critical</span>
                                         {% else %}
                                             <span class="badge badge-stock badge-medium">Low</span>
                                         {% endif %}
                                     </td>
-                                    <td>${{ "%.2f"|format(item.price) }}</td>
-                                    <td>{{ item.sales }}</td>
-                                    <td>
-                                        <a href="{{ url_for('update_item_record') }}?id={{ item.id }}" class="btn action-btn btn-restock">Restock</a>
+                                    <td>${{ "%.2f"|format(alert.item.price) }}</td>
+                                    <td>{{ alert.alert_date.strftime('%Y-%m-%d') }}</td>
+                                    <td class="d-flex gap-2">
+                                        <a href="{{ url_for('update_item_record') }}?id={{ alert.item_id }}" class="btn action-btn btn-restock">Restock</a>
+                                        <form action="{{ url_for('resolve_low_stock') }}" method="post">
+                                            <input type="hidden" name="alert_id" value="{{ alert.id }}">
+                                            <button type="submit" class="btn action-btn btn-resolve">Resolve</button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}

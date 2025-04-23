@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Your App</title>
+    <title>Register | ApparelSync</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
@@ -139,37 +139,49 @@
     <div class="register-container">
         <div class="register-header">
             <div class="brand-logo">
-                <i class="fas fa-user-plus"></i>
+                <i class="fas fa-tshirt"></i>
             </div>
             <h2>Create Account</h2>
-            <p class="text-muted">Please fill in the information below</p>
+            <p class="text-muted">Join ApparelSync and manage your inventory</p>
         </div>
 
         <div class="register-body">
             <form method="POST" action="{{ url_for('register') }}">
                 {{ form.hidden_tag() }}
 
-                <div class="form-floating mb-3 {{ 'has-error' if form.username.errors }}">
+                <div class="form-floating mb-3 {% if form.username.errors %}has-error{% endif %}">
                     {{ form.username(class="form-control", id="floatingUsername", placeholder="Username") }}
                     <label for="floatingUsername">Username</label>
                     {% if form.username.errors %}
-                        {% for error in form.username.errors %}
-                            <div class="error-message">
-                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                            </div>
-                        {% endfor %}
+                        <div class="error-message">
+                            {% for error in form.username.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
 
-                <div class="form-floating mb-3 {{ 'has-error' if form.password.errors }}">
+                <div class="form-floating mb-3 {% if form.email.errors %}has-error{% endif %}">
+                    {{ form.email(class="form-control", id="floatingEmail", placeholder="Email") }}
+                    <label for="floatingEmail">Email</label>
+                    {% if form.email.errors %}
+                        <div class="error-message">
+                            {% for error in form.email.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-floating mb-3 {% if form.password.errors %}has-error{% endif %}">
                     {{ form.password(class="form-control", id="floatingPassword", placeholder="Password") }}
                     <label for="floatingPassword">Password</label>
                     {% if form.password.errors %}
-                        {% for error in form.password.errors %}
-                            <div class="error-message">
-                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                            </div>
-                        {% endfor %}
+                        <div class="error-message">
+                            {% for error in form.password.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 </div>
 
