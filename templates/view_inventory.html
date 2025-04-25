@@ -430,6 +430,7 @@
                                     <th>Price</th>
                                     <th>Discount</th>
                                     <th>Discounted Price</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -456,6 +457,20 @@
                                         {% else %}
                                             ${{ "%.2f"|format(item.price) }}
                                         {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('update_item_record') }}?id={{ item.id }}" class="btn btn-sm btn-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('delete_item') }}?id={{ item.id }}" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        <a href="{{ url_for('add_sales') }}?id={{ item.id }}" class="btn btn-sm btn-success" title="Record Sale">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </a>
+                                        <a href="{{ url_for('apply_discount') }}?id={{ item.id }}" class="btn btn-sm btn-warning" title="Apply Discount">
+                                            <i class="fas fa-tag"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}

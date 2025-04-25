@@ -17,6 +17,7 @@
             --accent-color: #3bc9db;
             --dark-color: #343a40;
             --light-color: #f8f9fc;
+            --discount-color: #28a745;
             --gradient-start: #667eea;
             --gradient-end: #764ba2;
         }
@@ -171,14 +172,14 @@
         }
 
         .btn-submit {
-            background-color: var(--primary-color);
+            background-color: var(--discount-color);
             color: white;
-            border: 2px solid var(--primary-color);
+            border: 2px solid var(--discount-color);
         }
 
         .btn-submit:hover {
             background-color: transparent;
-            color: var(--primary-color);
+            color: var(--discount-color);
         }
 
         .btn-cancel {
@@ -239,6 +240,57 @@
         .alert {
             margin-bottom: 20px;
             border-radius: 10px;
+        }
+
+        .discount-icon {
+            font-size: 3rem;
+            color: var(--discount-color);
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-box {
+            background-color: #f0fff4;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-text {
+            color: var(--discount-color);
+            font-weight: 600;
+        }
+
+        .item-details {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--discount-color);
+        }
+
+        .item-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .item-detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .item-detail-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .item-detail-value {
+            font-weight: 500;
+            color: var(--discount-color);
         }
 
         @media (max-width: 992px) {
@@ -302,19 +354,61 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="form-card">
-                        <h3 class="mb-4"><i class="fas fa-percentage me-2"></i>Apply Item Discount</h3>
+                        <div class="text-center mb-4">
+                            <i class="fas fa-percentage discount-icon"></i>
+                            <h3 class="mb-3">Apply Item Discount</h3>
+                            <p class="text-muted">Set a discount percentage for this item</p>
+                        </div>
+
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
 
                         <form action="/dashboard/apply_discount" method="POST">
-                            <div class="form-group">
-                                <label for="item_id" class="form-label">Item ID</label>
-                                <input type="number" class="form-control" id="item_id" name="item_id" required>
-                                <small class="text-muted">Enter the ID of the item to discount</small>
-                            </div>
+                            {% if selected_item %}
+                                <div class="item-details">
+                                    <div class="item-detail-row">
+                                        <span class="item-detail-label">Item ID:</span>
+                                        <span class="item-detail-value">#{{ selected_item.id }}</span>
+                                    </div>
+                                    <div class="item-detail-row">
+                                        <span class="item-detail-label">Item Name:</span>
+                                        <span class="item-detail-value">{{ selected_item.item_name }}</span>
+                                    </div>
+                                    <div class="item-detail-row">
+                                        <span class="item-detail-label">Current Price:</span>
+                                        <span class="item-detail-value">${{ selected_item.price }}</span>
+                                    </div>
+                                    <div class="item-detail-row">
+                                        <span class="item-detail-label">Current Discount:</span>
+                                        <span class="item-detail-value">{{ selected_item.discount }}%</span>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="item_id" value="{{ selected_item.id }}">
+                            {% else %}
+                                <div class="form-group">
+                                    <label for="item_id" class="form-label">Item ID</label>
+                                    <input type="number" class="form-control" id="item_id" name="item_id" min="1" required>
+                                    <small class="text-muted">Enter the ID of the item to apply discount</small>
+                                </div>
+                            {% endif %}
 
                             <div class="form-group">
                                 <label for="discount" class="form-label">Discount Percentage (%)</label>
-                                <input type="number" class="form-control" id="discount" name="discount" min="0" max="100" step="0.01" required>
+                                <input type="number" class="form-control" id="discount" name="discount" min="0" max="100" step="0.01" required {% if selected_item %}value="{{ selected_item.discount }}"{% endif %}>
                                 <small class="text-muted">Enter a value between 0 and 100</small>
+                            </div>
+
+                            <div class="confirmation-box">
+                                <p class="info-text"><i class="fas fa-info-circle me-2"></i>Discount will be applied immediately</p>
+                                <p class="small text-muted mb-0">This discount will be reflected in all new sales of this item.</p>
                             </div>
 
                             <div class="d-flex justify-content-between mt-4">

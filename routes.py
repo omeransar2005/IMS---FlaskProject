@@ -242,8 +242,14 @@ def add_sales():
             flash('Insufficient stock or item not found.')
         return redirect(url_for('view_inventory'))
 
+    # Get item_id from URL parameter if provided
+    item_id = request.args.get('id')
+    selected_item = None
+    if item_id:
+        selected_item = InventoryItem.query.get(int(item_id))
+
     inventory = InventoryItem.query.all()
-    return render_template('add_sales.html', inventory=inventory)
+    return render_template('add_sales.html', inventory=inventory, selected_item=selected_item)
 
 
 @app.route('/dashboard/low_stock', methods=['GET'])
@@ -289,5 +295,11 @@ def apply_discount():
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
 
+    # Get item_id from URL parameter if provided
+    item_id = request.args.get('id')
+    selected_item = None
+    if item_id:
+        selected_item = InventoryItem.query.get(int(item_id))
+
     inventory = InventoryItem.query.all()
-    return render_template('apply_discount.html', inventory=inventory)
+    return render_template('apply_discount.html', inventory=inventory, selected_item=selected_item)
