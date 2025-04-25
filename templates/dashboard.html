@@ -8,144 +8,288 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4e73df;
+            --primary-color: #4361ee;
             --secondary-color: #f8f9fc;
-            --accent-color: #36b9cc;
-            --dark-color: #5a5c69;
+            --accent-color: #3bc9db;
+            --dark-color: #343a40;
             --light-color: #f8f9fc;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             padding: 20px;
         }
 
         .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .navbar-brand {
             font-weight: 700;
             color: var(--primary-color);
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
         }
 
         .navbar-brand span {
             color: var(--accent-color);
         }
 
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-color);
+            position: relative;
+            padding: 8px 15px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
+        }
+
         .dashboard-header {
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             text-align: center;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
+        .dashboard-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
         .dashboard-container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
+            padding: 20px 0;
         }
 
         .feature-card {
             background-color: white;
-            border-radius: 10px;
-            padding: 25px;
+            border-radius: 20px;
+            padding: 30px 25px;
             height: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
             text-decoration: none;
             color: var(--dark-color);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+            transform-origin: left;
+            z-index: -1;
         }
 
         .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-15px);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15);
             color: var(--primary-color);
         }
 
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
         .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            font-size: 1.8rem;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .feature-icon::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            top: -100%;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon::before {
+            top: 0;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
         }
 
         .feature-title {
-            font-weight: 600;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
         }
 
         .feature-text {
-            color: #858796;
-            font-size: 0.9rem;
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .user-welcome {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px 25px;
+            margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .user-welcome i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .welcome-text {
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+
+        .date-display {
+            font-weight: 500;
+            color: #6c757d;
         }
 
         footer {
             color: white;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 50px;
             padding: 20px;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-header h1 {
+                font-size: 2.3rem;
+            }
+
+            .user-welcome {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-welcome div:first-child {
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light py-3">
-        <div class="container">
-            <a class="navbar-brand" href="#"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('view_inventory') }}">Inventory</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('sales_report') }}">Reports</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </a>
-                    </li>
-                </ul>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light py-3">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Updated search form -->
+        <form class="d-none d-lg-flex search-form mx-auto" action="{{ url_for('search') }}" method="GET">
+            <div class="input-group">
+                <input class="form-control" type="search" name="search_query" placeholder="Search items..." aria-label="Search">
+                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
             </div>
+        </form>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_inventory') }}">Inventory</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('sales_report') }}">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="dashboard-container">
         <div class="dashboard-header">
@@ -156,15 +300,15 @@
         <div class="user-welcome">
             <div>
                 <i class="fas fa-user-circle me-2"></i>
-                <span>Welcome, {{ current_user.username }}</span>
+                <span class="welcome-text">Welcome, {{ current_user.username }}</span>
             </div>
             <div>
-                <span class="me-3"><i class="fas fa-calendar me-1"></i> {{ current_date }}</span>
+                <span class="date-display"><i class="fas fa-calendar me-2"></i>{{ current_date }}</span>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('view_inventory') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-boxes"></i>
@@ -174,7 +318,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('add_item') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-plus-circle"></i>
@@ -184,7 +328,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('update_item_record') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-edit"></i>
@@ -194,7 +338,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('delete_item') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-trash"></i>
@@ -204,7 +348,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('search') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-search"></i>
@@ -214,7 +358,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('sales_report') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-chart-bar"></i>
@@ -224,7 +368,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('add_sales') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-cash-register"></i>
@@ -234,7 +378,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('low_stock') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -244,7 +388,7 @@
                 </a>
             </div>
 
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 mb-4">
                 <a href="{{ url_for('apply_discount') }}" class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-tag"></i>

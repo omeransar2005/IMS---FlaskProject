@@ -8,52 +8,107 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4e73df;
+            --primary-color: #4361ee;
             --secondary-color: #f8f9fc;
-            --accent-color: #36b9cc;
-            --dark-color: #5a5c69;
+            --accent-color: #3bc9db;
+            --dark-color: #343a40;
             --light-color: #f8f9fc;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .navbar-brand {
             font-weight: 700;
             color: var(--primary-color);
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
         }
 
         .navbar-brand span {
             color: var(--accent-color);
         }
 
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-color);
+            position: relative;
+            padding: 8px 15px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
+        }
+
+        .nav-link.active::after {
+            width: 70%;
+        }
+
         .content-section {
-            padding: 80px 0;
+            padding: 140px 0 80px;
         }
 
         .page-title {
             color: white;
-            font-weight: 700;
+            font-weight: 800;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
             text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .search-card {
             background-color: white;
-            border-radius: 10px;
+            border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .search-card h3 {
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
         }
 
         .inventory-table {
@@ -75,16 +130,20 @@
 
         .inventory-table tbody tr {
             border-bottom: 1px solid #e3e6f0;
+            transition: all 0.3s ease;
         }
 
         .inventory-table tbody tr:hover {
             background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         .badge-stock {
             font-size: 0.85rem;
             padding: 5px 10px;
             border-radius: 30px;
+            font-weight: 500;
         }
 
         .badge-high {
@@ -109,47 +168,74 @@
         .form-label {
             font-weight: 600;
             color: var(--dark-color);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .form-control {
-            padding: 12px;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border-radius: 10px;
             border: 1px solid #e3e6f0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
         }
 
         .btn-search {
             background-color: var(--primary-color);
             color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            border: 2px solid var(--primary-color);
         }
 
         .btn-search:hover {
-            background-color: #3a5ecc;
-            transform: translateY(-2px);
+            background-color: transparent;
+            color: var(--primary-color);
         }
 
         .btn-clear {
             background-color: #e3e6f0;
             color: var(--dark-color);
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            border: 2px solid #e3e6f0;
         }
 
         .btn-clear:hover {
-            background-color: #d1d3e2;
+            background-color: transparent;
+            color: var(--dark-color);
         }
 
         .search-box {
@@ -170,10 +256,17 @@
 
         .table-responsive {
             overflow-x: auto;
+            border-radius: 10px;
         }
 
         .search-results {
             margin-top: 30px;
+        }
+
+        .search-results h4 {
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 20px;
         }
 
         .no-results {
@@ -182,25 +275,86 @@
             color: var(--dark-color);
         }
 
+        .no-results i {
+            color: var(--primary-color);
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .no-results h4 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
         footer {
-            background-color: #4e5d94;
+            background-color: #343a40;
             color: white;
-            padding: 30px 0;
+            padding: 40px 0;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.3s ease;
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+
+        footer a:hover {
+            color: var(--accent-color);
+        }
+
+        .copyright {
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+            color: white;
         }
 
         .alert {
             margin-bottom: 20px;
+            border-radius: 10px;
         }
 
         .highlight {
             background-color: rgba(255, 255, 0, 0.3);
             padding: 2px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 992px) {
+            .content-section {
+                padding: 120px 0 60px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light py-3">
+    <nav class="navbar navbar-expand-lg navbar-light py-3 fixed-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('home') }}"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -250,12 +404,15 @@
 
                 <h3 class="mb-4"><i class="fas fa-search me-2"></i>Search Items</h3>
 
-                <form action="{{ url_for('search') }}" method="POST">
+                <!-- Changed method from POST to GET to match dashboard search form -->
+                <form action="{{ url_for('search') }}" method="GET">
                     <div class="row">
                         <div class="col-md-8 mb-3">
                             <div class="form-group search-box">
                                 <label for="search_query" class="form-label">Search Query</label>
-                                <input type="text" class="form-control search-input" id="search_query" name="search_query" placeholder="Enter item name, ID, or keyword..." value="{{ request.form['search_query'] if request.form else '' }}">
+                                <input type="text" class="form-control search-input" id="search_query" name="search_query"
+                                       placeholder="Enter item name, ID, or keyword..."
+                                       value="{{ search_query if search_query else '' }}">
                                 <i class="fas fa-search search-icon"></i>
                             </div>
                         </div>
@@ -284,6 +441,7 @@
                                         <th>Quantity</th>
                                         <th>Price</th>
                                         <th>Discount</th>
+                                        <th>Actions</th> <!-- Added Actions column -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -303,12 +461,21 @@
                                         </td>
                                         <td>${{ "%.2f"|format(item.price) }}</td>
                                         <td>{{ "%.0f"|format(item.discount) }}%</td>
+                                        <td>
+                                            <!-- Added action buttons -->
+                                            <a href="{{ url_for('update_item_record') }}?id={{ item.id }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ url_for('delete_item') }}?id={{ item.id }}" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                    {% elif request.method == 'POST' %}
+                    {% elif search_query %}
                         <div class="no-results">
                             <i class="fas fa-search fa-4x mb-3"></i>
                             <h4>No items found</h4>
@@ -323,15 +490,17 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p>&copy; 2025 ApparelSync. All rights reserved.</p>
+                    <p class="copyright mb-0">&copy; 2025 ApparelSync. All rights reserved.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+                <div class="col-md-6">
+                    <div class="social-icons">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
             </div>
         </div>

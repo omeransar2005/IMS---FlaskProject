@@ -104,19 +104,15 @@ def update_item_record():
             item.quantity = int(request.form['quantity'])
             item.price = float(request.form['price'])
 
-            # Check if item quantity is now below threshold
+            # Check if we need to create a low stock alert
             threshold = 10  # Default threshold
-            if item.quantity < threshold and old_quantity >= threshold:
-                low_stock_alert = LowStock(item_id=item.id, threshold=threshold)
-                db.session.add(low_stock_alert)
-                flash('Item updated successfully! Note: Item is now below stock threshold.')
-            # Check if item was previously below threshold but now is not
-            elif item.quantity >= threshold and old_quantity < threshold:
-                # Resolve any existing alerts
-                low_stock_alerts = LowStock.query.filter_by(item_id=item.id, resolved=False).all()
-                for alert in low_stock_alerts:
-                    alert.resolved = True
-                flash('Item updated successfully! Stock levels now adequate.')
+            if item.quantity < threshold:
+                # Check if there's already an unresolved alert
+                existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
+                if not existing_alert:
+                    low_stock_alert = LowStock(item_id=item_id, threshold=threshold)
+                    db.session.add(low_stock_alert)
+                    flash('Item updated! Warning: Item is now below stock threshold.')
             else:
                 flash('Item updated successfully!')
 
@@ -124,14 +120,20 @@ def update_item_record():
         else:
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
-    return render_template('update_item_record.html')
+    else:
+        # Handle GET request
+        item_id = request.args.get('id')
+        item = None
+        if item_id:
+            item = InventoryItem.query.get(int(item_id))
+        return render_template('update_item_record.html', item=item)
 
 
 @app.route('/dashboard/delete_item', methods=['GET', 'POST'])
 @login_required
 def delete_item():
     if request.method == 'POST':
-        # Handle form submission for delete action
+        # Existing code remains the same
         item_id = int(request.form['item_id'])
         item = InventoryItem.query.get(item_id)
         if item:
@@ -148,7 +150,9 @@ def delete_item():
         # Handle GET request - show delete confirmation page
         item_id = request.args.get('id')  # Get ID from URL parameter
         if item_id:
-            return render_template('delete_item.html', item_id=item_id)
+            item = InventoryItem.query.get(int(item_id))
+            if item:
+                return render_template('delete_item.html', item=item, item_id=item_id)
         return render_template('delete_item.html')
 
 
@@ -156,10 +160,21 @@ def delete_item():
 @login_required
 def search():
     results = []
+    search_query = ""
+
     if request.method == 'POST':
-        query = request.form['search_query']
-        results = InventoryItem.query.filter(InventoryItem.item_name.contains(query)).all()
-    return render_template('search.html', results=results)
+        search_query = request.form.get('search_query', '')
+    else:  # GET request
+        search_query = request.args.get('search_query', '')
+
+    # Perform search if there's a query
+    if search_query:
+        # Using case-insensitive search for better results
+        results = InventoryItem.query.filter(
+            InventoryItem.item_name.ilike(f'%{search_query}%')
+        ).all()
+
+    return render_template('search.html', results=results, search_query=search_query)
 
 
 @app.route('/dashboard/sales_report', methods=['GET', 'POST'])
@@ -259,22 +274,6 @@ def low_stock():
     return render_template('low_stock.html', alerts=low_stock_alerts)
 
 
-@app.route('/dashboard/resolve_low_stock', methods=['POST'])
-@login_required
-def resolve_low_stock():
-    alert_id = int(request.form['alert_id'])
-    alert = LowStock.query.get(alert_id)
-
-    if alert:
-        alert.resolved = True
-        db.session.commit()
-        flash('Low stock alert marked as resolved.')
-    else:
-        flash('Alert not found.')
-
-    return redirect(url_for('low_stock'))
-
-
 @app.route('/dashboard/apply_discount', methods=['GET', 'POST'])
 @login_required
 def apply_discount():
@@ -292,23 +291,3 @@ def apply_discount():
 
     inventory = InventoryItem.query.all()
     return render_template('apply_discount.html', inventory=inventory)
-
-
-@app.route('/dashboard/view_sales_history', methods=['GET'])
-@login_required
-def view_sales_history():
-    item_id = request.args.get('item_id')
-
-    if item_id:
-        # View sales history for a specific item
-        item = InventoryItem.query.get(int(item_id))
-        if item:
-            sales = Sale.query.filter_by(item_id=int(item_id)).order_by(Sale.sale_date.desc()).all()
-            return render_template('sales_history.html', item=item, sales=sales)
-        else:
-            flash('Item not found.')
-            return redirect(url_for('view_inventory'))
-    else:
-        # View all sales history
-        sales = Sale.query.order_by(Sale.sale_date.desc()).all()
-        return render_template('sales_history.html', sales=sales)
