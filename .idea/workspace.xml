@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79d386bc-f78f-4290-8f58-99f637d3c3bc" name="Changes" comment="Enhance sales and discount management UI with item details display and improved alert messages">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="79d386bc-f78f-4290-8f58-99f637d3c3bc" name="Changes" comment="Enhance workspace configuration and update .gitignore for improved project management">
+      <change afterPath="$PROJECT_DIR$/erd.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instance/database.db" beforeDir="false" afterPath="$PROJECT_DIR$/instance/database.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/view_inventory.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/view_inventory.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +20,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Flask Main" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -172,6 +174,10 @@
       <workItem from="1745488424273" duration="146000" />
       <workItem from="1745511234752" duration="3965000" />
       <workItem from="1745579469904" duration="9465000" />
+      <workItem from="1745809132353" duration="705000" />
+      <workItem from="1745819574263" duration="932000" />
+      <workItem from="1745824713634" duration="249000" />
+      <workItem from="1745849876966" duration="3576000" />
     </task>
     <task id="LOCAL-00001" summary="Initialize Flask project with user authentication and inventory management features">
       <option name="closed" value="true" />
@@ -229,7 +235,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/IMS___FlaskProject$wifi.coverage" NAME="wifi Coverage Results" MODIFIED="1744082971967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/OneDrive/Desktop" />
-    <SUITE FILE_PATH="coverage/IMS___FlaskProject$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1745596700197" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/IMS___FlaskProject$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1745854284054" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/IMS___FlaskProject$IMS___FlaskProject.coverage" NAME="IMS - FlaskProject Coverage Results" MODIFIED="1744444643020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

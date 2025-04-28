@@ -74,12 +74,28 @@ def add_item():
         quantity = int(request.form['quantity'])
         price = float(request.form['price'])
 
+        existing_item = InventoryItem.query.filter_by(item_name=name).first()
+
+        if existing_item:
+            # Update existing item
+            existing_item.quantity += quantity
+            existing_item.price = price
+
+            threshold = 10
+            if existing_item.quantity >= threshold:
+                existing_alerts = LowStock.query.filter_by(item_id=existing_item.id, resolved=False).all()
+                for alert in existing_alerts:
+                    alert.resolved = True
+                flash('Item quantity updated and low stock alert resolved!')
+
+            db.session.commit()
+            return redirect(url_for('view_inventory'))
+
         item = InventoryItem(item_name=name, quantity=quantity, price=price)
         db.session.add(item)
         db.session.commit()
 
-        # Check if new item is already below threshold
-        threshold = 10  # Default threshold
+        threshold = 10
         if quantity < threshold:
             low_stock_alert = LowStock(item_id=item.id, threshold=threshold)
             db.session.add(low_stock_alert)
@@ -96,29 +112,51 @@ def add_item():
 @login_required
 def update_item_record():
     if request.method == 'POST':
-        item_id = int(request.form['item_id'])
-        item = InventoryItem.query.get(item_id)
-        if item:
-            old_quantity = item.quantity
-            item.item_name = request.form['item_name']
-            item.quantity = int(request.form['quantity'])
-            item.price = float(request.form['price'])
+        try:
+            item_id = int(request.form['item_id'])
+            item = InventoryItem.query.get(item_id)
 
-            # Check if we need to create a low stock alert
-            threshold = 10  # Default threshold
-            if item.quantity < threshold:
-                # Check if there's already an unresolved alert
-                existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
-                if not existing_alert:
-                    low_stock_alert = LowStock(item_id=item_id, threshold=threshold)
-                    db.session.add(low_stock_alert)
-                    flash('Item updated! Warning: Item is now below stock threshold.')
+            if item:
+                # Store old values for comparison
+                old_name = item.item_name
+                old_quantity = item.quantity
+                old_price = item.price
+
+                # Update with new values
+                item.item_name = request.form['item_name']
+                item.quantity = int(request.form['quantity'])
+                item.price = float(request.form['price'])
+
+                # Check if we need to create a low stock alert
+                threshold = 10  # Default threshold
+                if item.quantity < threshold:
+                    existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
+                    if not existing_alert:
+                        low_stock_alert = LowStock(item_id=item_id, threshold=threshold)
+                        db.session.add(low_stock_alert)
+                        flash(f'Item updated! Warning: Item is now below stock threshold.')
+                else:
+                    # If quantity is now above threshold, resolve any existing alerts
+                    existing_alerts = LowStock.query.filter_by(item_id=item_id, resolved=False).all()
+                    if existing_alerts:
+                        for alert in existing_alerts:
+                            alert.resolved = True
+                        flash(
+                            f'Item updated from "{old_name}" to "{item.item_name}"! Low stock alert has been resolved.')
+                    else:
+                        flash(f'Item updated from "{old_name}" to "{item.item_name}" successfully!')
+
+                db.session.commit()
+                print(
+                    f"Item {item_id} updated: {old_name}->{item.item_name}, {old_quantity}->{item.quantity}, {old_price}->{item.price}")
             else:
-                flash('Item updated successfully!')
+                flash(f'Item with ID {item_id} not found.')
+                print(f"Item with ID {item_id} not found in database")
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating item: {str(e)}')
+            print(f"Error updating item: {str(e)}")
 
-            db.session.commit()
-        else:
-            flash('Item not found.')
         return redirect(url_for('view_inventory'))
     else:
         # Handle GET request
@@ -164,10 +202,9 @@ def search():
 
     if request.method == 'POST':
         search_query = request.form.get('search_query', '')
-    else:  # GET request
+    else:
         search_query = request.args.get('search_query', '')
 
-    # Perform search if there's a query
     if search_query:
         # Using case-insensitive search for better results
         results = InventoryItem.query.filter(
@@ -182,11 +219,9 @@ def search():
 def sales_report():
     sales = Sale.query.all()
 
-    # Calculate total sales
     total_sales = sum(
         (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in sales)
 
-    # Group sales by item for reporting
     items_with_sales = []
     for item in InventoryItem.query.all():
         item_sales = Sale.query.filter_by(item_id=item.id).all()
@@ -213,10 +248,8 @@ def add_sales():
         item = InventoryItem.query.get(item_id)
 
         if item and item.quantity >= sold_qty:
-            # Update inventory quantity
             item.quantity -= sold_qty
 
-            # Record the sale with current price and discount
             new_sale = Sale(
                 item_id=item_id,
                 quantity=sold_qty,

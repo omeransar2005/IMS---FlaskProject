@@ -19,6 +19,9 @@
             --light-color: #f8f9fc;
             --gradient-start: #667eea;
             --gradient-end: #764ba2;
+            --danger-color: #e74a3b;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
         }
 
         body {
@@ -324,6 +327,97 @@
             margin-bottom: 30px;
         }
 
+        .table-action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* Fix for the underline issue */
+        .table-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            text-decoration: none; /* Remove underline */
+            color: white; /* Default text color */
+        }
+
+        .table-btn i {
+            font-size: 14px; /* Adjust icon size */
+        }
+
+        .table-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .table-btn:hover::before {
+            left: 100%;
+        }
+
+        .table-btn:hover {
+            transform: translateY(-3px);
+            text-decoration: none; /* Ensure no underline on hover */
+        }
+
+        .table-btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .table-btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+
+        .table-btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        .table-btn-danger:hover {
+            background-color: transparent;
+            color: var(--danger-color);
+        }
+
+        .table-btn-success {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .table-btn-success:hover {
+            background-color: transparent;
+            color: var(--success-color);
+        }
+
+        .table-btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+            border-color: var(--warning-color);
+        }
+
+        .table-btn-warning:hover {
+            background-color: transparent;
+            color: var(--warning-color);
+        }
+
         @media (max-width: 992px) {
             .content-section {
                 padding: 120px 0 60px;
@@ -345,6 +439,10 @@
                 margin-right: 0;
                 text-align: center;
             }
+
+            .table-action-buttons {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -352,29 +450,29 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light py-3 fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home') }}"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
+            <a class="navbar-brand" href="/"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('view_inventory') }}">Inventory</a>
+                        <a class="nav-link active" href="/dashboard/view_inventory">Inventory</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('sales_report') }}">Sales Report</a>
+                        <a class="nav-link" href="/dashboard/sales_report">Sales Report</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('low_stock') }}">Low Stock</a>
+                        <a class="nav-link" href="/dashboard/low_stock">Low Stock</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+                        <a class="nav-link" href="/dashboard/search">Search</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link" href="/logout">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -387,102 +485,91 @@
             <h1 class="page-title">Inventory Management</h1>
 
             <div class="inventory-card">
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
                 <div class="mb-4">
                     <h3 class="mb-4"><i class="fas fa-box me-2"></i>Inventory Items</h3>
                     <div class="action-buttons">
-                        <a href="{{ url_for('add_item') }}" class="btn btn-add btn-action">
+                        <a href="/dashboard/add_item" class="btn btn-add btn-action">
                             <i class="fas fa-plus me-2"></i>Add New Item
                         </a>
-                        <a href="{{ url_for('update_item_record') }}" class="btn btn-edit btn-action">
+                        <a href="/dashboard/update_item" class="btn btn-edit btn-action">
                             <i class="fas fa-edit me-2"></i>Update Item
                         </a>
-                        <a href="{{ url_for('delete_item') }}" class="btn btn-delete btn-action">
+                        <a href="/dashboard/delete_item" class="btn btn-delete btn-action">
                             <i class="fas fa-trash me-2"></i>Delete Item
                         </a>
-                        <a href="{{ url_for('add_sales') }}" class="btn btn-sale btn-action">
+                        <a href="/dashboard/add_sales" class="btn btn-sale btn-action">
                             <i class="fas fa-shopping-cart me-2"></i>Record Sale
                         </a>
-                        <a href="{{ url_for('apply_discount') }}" class="btn btn-discount btn-action">
+                        <a href="/dashboard/apply_discount" class="btn btn-discount btn-action">
                             <i class="fas fa-tag me-2"></i>Apply Discount
                         </a>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                    {% if inventory %}
-                        <table class="inventory-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Item Name</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Discount</th>
-                                    <th>Discounted Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Item Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>Discounted Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if inventory %}
                                 {% for item in inventory %}
-                                <tr>
-                                    <td>{{ item.id }}</td>
-                                    <td>{{ item.item_name }}</td>
-                                    <td>
-                                        {{ item.quantity }}
-                                        {% if item.quantity > 20 %}
-                                            <span class="badge badge-stock badge-high">High</span>
-                                        {% elif item.quantity > 10 %}
-                                            <span class="badge badge-stock badge-medium">Medium</span>
-                                        {% else %}
-                                            <span class="badge badge-stock badge-low">Low</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>${{ "%.2f"|format(item.price) }}</td>
-                                    <td>{{ "%.0f"|format(item.discount) }}%</td>
-                                    <td>
-                                        {% if item.discount > 0 %}
-                                            <span class="price-discounted">${{ "%.2f"|format(item.price - (item.price * item.discount / 100)) }}</span>
-                                            <div><small class="original-price">${{ "%.2f"|format(item.price) }}</small></div>
-                                        {% else %}
-                                            ${{ "%.2f"|format(item.price) }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ url_for('update_item_record') }}?id={{ item.id }}" class="btn btn-sm btn-primary" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{{ url_for('delete_item') }}?id={{ item.id }}" class="btn btn-sm btn-danger" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                        <a href="{{ url_for('add_sales') }}?id={{ item.id }}" class="btn btn-sm btn-success" title="Record Sale">
-                                            <i class="fas fa-shopping-cart"></i>
-                                        </a>
-                                        <a href="{{ url_for('apply_discount') }}?id={{ item.id }}" class="btn btn-sm btn-warning" title="Apply Discount">
-                                            <i class="fas fa-tag"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.item_name }}</td>
+                                        <td>
+                                            {{ item.quantity }}
+                                            {% if item.quantity > 100 %}
+                                                <span class="badge badge-stock badge-high">High</span>
+                                            {% elif item.quantity > 50 %}
+                                                <span class="badge badge-stock badge-medium">Medium</span>
+                                            {% else %}
+                                                <span class="badge badge-stock badge-low">Low</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>${{ item.price | round(2) }}</td>
+                                        <td>{{ item.discount | round }}%</td>
+                                        <td>
+                                            {% if item.discount > 0 %}
+                                                <span class="price-discounted">${{ (item.price - (item.price * item.discount / 100)) | round(2) }}</span>
+                                                <div><small class="original-price">${{ item.price | round(2) }}</small></div>
+                                            {% else %}
+                                                ${{ item.price | round(2) }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="table-action-buttons">
+                                                <a href="/dashboard/update_item?id={{ item.id }}" class="table-btn table-btn-primary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="/dashboard/delete_item?id={{ item.id }}" class="table-btn table-btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                                <a href="/dashboard/add_sales?id={{ item.id }}" class="table-btn table-btn-success" title="Record Sale">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                </a>
+                                                <a href="/dashboard/apply_discount?id={{ item.id }}" class="table-btn table-btn-warning" title="Apply Discount">
+                                                    <i class="fas fa-tag"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <div class="no-items">
-                            <i class="fas fa-box-open fa-4x mb-3"></i>
-                            <h4>No inventory items found</h4>
-                            <p>Start by adding your first inventory item.</p>
-                        </div>
-                    {% endif %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No inventory items found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
