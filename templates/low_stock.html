@@ -125,6 +125,11 @@
             transform: translateY(-5px);
         }
 
+        .stats-card.resolved {
+            background: linear-gradient(135deg, #1cc88a 0%, #20c997 100%);
+            box-shadow: 0 10px 20px rgba(28, 200, 138, 0.2);
+        }
+
         .stats-card h2 {
             font-size: 2.5rem;
             font-weight: 700;
@@ -187,6 +192,11 @@
 
         .badge-low {
             background-color: #e74a3b;
+            color: white;
+        }
+
+        .badge-resolved {
+            background-color: #1cc88a;
             color: white;
         }
 
@@ -311,6 +321,57 @@
             font-weight: 600;
         }
 
+        .nav-tabs {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            font-weight: 600;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background: transparent;
+            border: none;
+        }
+
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 0;
+            transform: none;
+        }
+
+        .nav-tabs .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-tabs .nav-link:hover::after {
+            width: 70%;
+        }
+
+        .tab-content {
+            padding-top: 15px;
+        }
+
         @media (max-width: 992px) {
             .content-section {
                 padding: 120px 0 60px;
@@ -344,10 +405,10 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ url_for('low_stock') }}">
                             Low Stock
-                            {% if alerts %}
+                            {% if active_alerts %}
                             <span class="position-relative">
                                 <i class="fas fa-bell"></i>
-                                <span class="alert-count">{{ alerts|length }}</span>
+                                <span class="alert-count">{{ active_alerts|length }}</span>
                             </span>
                             {% else %}
                             <i class="fas fa-bell"></i>
@@ -382,71 +443,152 @@
                     {% endif %}
                 {% endwith %}
 
-                <div class="stats-card mb-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h4 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Items</h4>
-                            <h2>{{ alerts|length }}</h2>
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="stockTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="active-alerts-tab" data-bs-toggle="tab" data-bs-target="#active-alerts" type="button" role="tab" aria-controls="active-alerts" aria-selected="true">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Active Alerts
+                            {% if active_alerts %}
+                            <span class="badge bg-danger ms-2">{{ active_alerts|length }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="past-alerts-tab" data-bs-toggle="tab" data-bs-target="#past-alerts" type="button" role="tab" aria-controls="past-alerts" aria-selected="false">
+                            <i class="fas fa-check-circle me-2"></i>Past Alerts
+                            {% if resolved_alerts %}
+                            <span class="badge bg-success ms-2">{{ resolved_alerts|length }}</span>
+                            {% endif %}
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="stockTabsContent">
+                    <!-- Active Alerts Tab -->
+                    <div class="tab-pane fade show active" id="active-alerts" role="tabpanel" aria-labelledby="active-alerts-tab">
+                        <div class="stats-card mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h4 class="mb-2"><i class="fas fa-exclamation-triangle me-2"></i>Low Stock Items</h4>
+                                    <h2>{{ active_alerts|length }}</h2>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p class="mb-1">Threshold Level</p>
+                                    <h5>10 units</h5>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6 text-md-end">
-                            <p class="mb-1">Threshold Level</p>
-                            <h5>10 units</h5>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="mb-0"><i class="fas fa-box-open me-2"></i>Items Requiring Attention</h3>
+                            <a href="{{ url_for('add_item') }}" class="btn btn-primary">Add New Items</a>
+                        </div>
+
+                        <div class="table-responsive">
+                            {% if active_alerts %}
+                                <table class="inventory-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Alert ID</th>
+                                            <th>Item ID</th>
+                                            <th>Item Name</th>
+                                            <th>Current Stock</th>
+                                            <th>Status</th>
+                                            <th>Price</th>
+                                            <th>Alert Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for alert in active_alerts %}
+                                        <tr>
+                                            <td>{{ alert.id }}</td>
+                                            <td>{{ alert.item_id }}</td>
+                                            <td>{{ alert.item.item_name }}</td>
+                                            <td>
+                                                {% if alert.item.quantity <= 5 %}
+                                                    <span class="critical-level">{{ alert.item.quantity }}</span>
+                                                {% else %}
+                                                    <span class="warning-level">{{ alert.item.quantity }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if alert.item.quantity <= 5 %}
+                                                    <span class="badge badge-stock badge-low">Critical</span>
+                                                {% else %}
+                                                    <span class="badge badge-stock badge-medium">Low</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>${{ "%.2f"|format(alert.item.price) }}</td>
+                                            <td>{{ alert.alert_date.strftime('%Y-%m-%d') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="no-items">
+                                    <i class="fas fa-check-circle fa-4x mb-3 text-success"></i>
+                                    <h4>No low stock items!</h4>
+                                    <p>All your inventory items are above the threshold level.</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="mb-0"><i class="fas fa-box-open me-2"></i>Items Requiring Attention</h3>
-                    <a href="{{ url_for('add_item') }}" class="btn btn-primary">Add New Items</a>
-                </div>
-
-                <div class="table-responsive">
-                    {% if alerts %}
-                        <table class="inventory-table">
-                            <thead>
-                                <tr>
-                                    <th>Alert ID</th>
-                                    <th>Item ID</th>
-                                    <th>Item Name</th>
-                                    <th>Current Stock</th>
-                                    <th>Status</th>
-                                    <th>Price</th>
-                                    <th>Alert Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for alert in alerts %}
-                                <tr>
-                                    <td>{{ alert.id }}</td>
-                                    <td>{{ alert.item_id }}</td>
-                                    <td>{{ alert.item.item_name }}</td>
-                                    <td>
-                                        {% if alert.item.quantity <= 5 %}
-                                            <span class="critical-level">{{ alert.item.quantity }}</span>
-                                        {% else %}
-                                            <span class="warning-level">{{ alert.item.quantity }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if alert.item.quantity <= 5 %}
-                                            <span class="badge badge-stock badge-low">Critical</span>
-                                        {% else %}
-                                            <span class="badge badge-stock badge-medium">Low</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>${{ "%.2f"|format(alert.item.price) }}</td>
-                                    <td>{{ alert.alert_date.strftime('%Y-%m-%d') }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <div class="no-items">
-                            <i class="fas fa-check-circle fa-4x mb-3 text-success"></i>
-                            <h4>No low stock items!</h4>
-                            <p>All your inventory items are above the threshold level.</p>
+                    <!-- Past Alerts Tab -->
+                    <div class="tab-pane fade" id="past-alerts" role="tabpanel" aria-labelledby="past-alerts-tab">
+                        <div class="stats-card mb-4 resolved">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h4 class="mb-2"><i class="fas fa-check-circle me-2"></i>Resolved Alerts</h4>
+                                    <h2>{{ resolved_alerts|length }}</h2>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p class="mb-1">Historical Data</p>
+                                    <h5>All Time</h5>
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="mb-0"><i class="fas fa-history me-2"></i>Past Stock Issues</h3>
+                        </div>
+
+                        <div class="table-responsive">
+                            {% if resolved_alerts %}
+                                <table class="inventory-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Alert ID</th>
+                                            <th>Item ID</th>
+                                            <th>Item Name</th>
+                                            <th>Current Stock</th>
+                                            <th>Status</th>
+                                            <th>Alert Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for alert in resolved_alerts %}
+                                        <tr>
+                                            <td>{{ alert.id }}</td>
+                                            <td>{{ alert.item_id }}</td>
+                                            <td>{{ alert.item.item_name }}</td>
+                                            <td>{{ alert.item.quantity }}</td>
+                                            <td><span class="badge badge-stock badge-resolved">Resolved</span></td>
+                                            <td>{{ alert.alert_date.strftime('%Y-%m-%d') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="no-items">
+                                    <i class="fas fa-history fa-4x mb-3 text-muted"></i>
+                                    <h4>No resolved alerts yet</h4>
+                                    <p>Your resolved low stock alerts history will appear here.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

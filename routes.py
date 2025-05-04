@@ -40,7 +40,6 @@ def register():
     return render_template('register.html', form=form)
 
 
-
 @app.route('/features')
 def features():
     return render_template('features.html')
@@ -77,7 +76,7 @@ def add_item():
         existing_item = InventoryItem.query.filter_by(item_name=name).first()
 
         if existing_item:
-            # Update existing item
+            # Update existing item if it already exists
             existing_item.quantity += quantity
             existing_item.price = price
 
@@ -91,6 +90,7 @@ def add_item():
             db.session.commit()
             return redirect(url_for('view_inventory'))
 
+        # Add a new item
         item = InventoryItem(item_name=name, quantity=quantity, price=price)
         db.session.add(item)
         db.session.commit()
@@ -117,18 +117,17 @@ def update_item_record():
             item = InventoryItem.query.get(item_id)
 
             if item:
-                # Store old values for comparison
+                # Store old values for logging
                 old_name = item.item_name
                 old_quantity = item.quantity
                 old_price = item.price
 
-                # Update with new values
+                # Update item details
                 item.item_name = request.form['item_name']
                 item.quantity = int(request.form['quantity'])
                 item.price = float(request.form['price'])
 
-                # Check if we need to create a low stock alert
-                threshold = 10  # Default threshold
+                threshold = 10
                 if item.quantity < threshold:
                     existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
                     if not existing_alert:
@@ -136,19 +135,16 @@ def update_item_record():
                         db.session.add(low_stock_alert)
                         flash(f'Item updated! Warning: Item is now below stock threshold.')
                 else:
-                    # If quantity is now above threshold, resolve any existing alerts
                     existing_alerts = LowStock.query.filter_by(item_id=item_id, resolved=False).all()
                     if existing_alerts:
                         for alert in existing_alerts:
                             alert.resolved = True
-                        flash(
-                            f'Item updated from "{old_name}" to "{item.item_name}"! Low stock alert has been resolved.')
+                        flash(f'Item updated from "{old_name}" to "{item.item_name}"! Low stock alert has been resolved.')
                     else:
                         flash(f'Item updated from "{old_name}" to "{item.item_name}" successfully!')
 
                 db.session.commit()
-                print(
-                    f"Item {item_id} updated: {old_name}->{item.item_name}, {old_quantity}->{item.quantity}, {old_price}->{item.price}")
+                print(f"Item {item_id} updated: {old_name}->{item.item_name}, {old_quantity}->{item.quantity}, {old_price}->{item.price}")
             else:
                 flash(f'Item with ID {item_id} not found.')
                 print(f"Item with ID {item_id} not found in database")
@@ -159,7 +155,6 @@ def update_item_record():
 
         return redirect(url_for('view_inventory'))
     else:
-        # Handle GET request
         item_id = request.args.get('id')
         item = None
         if item_id:
@@ -171,7 +166,6 @@ def update_item_record():
 @login_required
 def delete_item():
     if request.method == 'POST':
-        # Existing code remains the same
         item_id = int(request.form['item_id'])
         item = InventoryItem.query.get(item_id)
         if item:
@@ -185,8 +179,7 @@ def delete_item():
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
     else:
-        # Handle GET request - show delete confirmation page
-        item_id = request.args.get('id')  # Get ID from URL parameter
+        item_id = request.args.get('id')
         if item_id:
             item = InventoryItem.query.get(int(item_id))
             if item:
@@ -206,7 +199,7 @@ def search():
         search_query = request.args.get('search_query', '')
 
     if search_query:
-        # Using case-insensitive search for better results
+        # Case-insensitive search
         results = InventoryItem.query.filter(
             InventoryItem.item_name.ilike(f'%{search_query}%')
         ).all()
@@ -220,7 +213,8 @@ def sales_report():
     sales = Sale.query.all()
 
     total_sales = sum(
-        (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in sales)
+        (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in sales
+    )
 
     items_with_sales = []
     for item in InventoryItem.query.all():
@@ -228,8 +222,8 @@ def sales_report():
         if item_sales:
             total_quantity = sum(sale.quantity for sale in item_sales)
             total_revenue = sum(
-                (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in
-                item_sales)
+                (sale.price_at_sale - (sale.price_at_sale * sale.discount_at_sale / 100)) * sale.quantity for sale in item_sales
+            )
             items_with_sales.append({
                 'item': item,
                 'total_quantity': total_quantity,
@@ -258,10 +252,8 @@ def add_sales():
             )
             db.session.add(new_sale)
 
-            # Check if stock is now low after this sale
-            threshold = 10  # Default threshold
+            threshold = 10
             if item.quantity < threshold:
-                # Check if there's already an unresolved alert
                 existing_alert = LowStock.query.filter_by(item_id=item_id, resolved=False).first()
                 if not existing_alert:
                     low_stock_alert = LowStock(item_id=item_id, threshold=threshold)
@@ -275,7 +267,6 @@ def add_sales():
             flash('Insufficient stock or item not found.')
         return redirect(url_for('view_inventory'))
 
-    # Get item_id from URL parameter if provided
     item_id = request.args.get('id')
     selected_item = None
     if item_id:
@@ -288,29 +279,25 @@ def add_sales():
 @app.route('/dashboard/low_stock', methods=['GET'])
 @login_required
 def low_stock():
-    # Get all current (unresolved) low stock alerts
-    low_stock_alerts = LowStock.query.filter_by(resolved=False).all()
+    active_alerts = LowStock.query.filter_by(resolved=False).all()
+    resolved_alerts = LowStock.query.filter_by(resolved=True).order_by(LowStock.alert_date.desc()).all()
 
-    # Get items that are currently below threshold but might not have alerts yet
-    threshold = 10  # Default threshold
+    threshold = 10
     low_inventory = InventoryItem.query.filter(InventoryItem.quantity < threshold).all()
 
-    # Create a set of item IDs that already have alerts
-    alerted_item_ids = {alert.item_id for alert in low_stock_alerts}
+    alerted_item_ids = {alert.item_id for alert in active_alerts}
 
-    # Create alerts for items that are below threshold but don't have alerts
     for item in low_inventory:
         if item.id not in alerted_item_ids:
             new_alert = LowStock(item_id=item.id, threshold=threshold)
             db.session.add(new_alert)
             alerted_item_ids.add(item.id)
 
-    if alerted_item_ids:
+    if len(low_inventory) > len(alerted_item_ids):
         db.session.commit()
-        # Refresh the alerts query to include newly created alerts
-        low_stock_alerts = LowStock.query.filter_by(resolved=False).all()
+        active_alerts = LowStock.query.filter_by(resolved=False).all()
 
-    return render_template('low_stock.html', alerts=low_stock_alerts)
+    return render_template('low_stock.html', active_alerts=active_alerts, resolved_alerts=resolved_alerts)
 
 
 @app.route('/dashboard/apply_discount', methods=['GET', 'POST'])
@@ -328,7 +315,6 @@ def apply_discount():
             flash('Item not found.')
         return redirect(url_for('view_inventory'))
 
-    # Get item_id from URL parameter if provided
     item_id = request.args.get('id')
     selected_item = None
     if item_id:
