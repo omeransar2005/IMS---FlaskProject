@@ -13,13 +13,11 @@ class RegisterForm(FlaskForm):
                              render_kw={'placeholder': 'Password'})
     submit = SubmitField('Register')
 
-    # noinspection PyMethodMayBeStatic
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username already exists. Please choose a different one.')
 
-    # noinspection PyMethodMayBeStatic
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
