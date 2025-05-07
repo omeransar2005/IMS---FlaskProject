@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApparelSync | Users</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #f8f9fc;
+            --accent-color: #3bc9db;
+            --dark-color: #343a40;
+            --light-color: #f8f9fc;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+            --danger-color: #e74a3b;
+            --success-color: #1cc88a;
+            --warning-color: #f6c23e;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-brand span {
+            color: var(--accent-color);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-color);
+            position: relative;
+            padding: 8px 15px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
+        }
+
+        .nav-link.active::after {
+            width: 70%;
+        }
+
+        .content-section {
+            padding: 140px 0 80px;
+        }
+
+        .page-title {
+            color: white;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .users-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .users-card h3 {
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .users-table {
+            width: 100%;
+        }
+
+        .users-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        .users-table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .users-table tbody tr {
+            border-bottom: 1px solid #e3e6f0;
+            transition: all 0.3s ease;
+        }
+
+        .users-table tbody tr:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-details h5 {
+            margin-bottom: 0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-details small {
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+
+        .badge-stat {
+            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .sales-value {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 10px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 40px 0;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.3s ease;
+            margin: 0 10px;
+            font-size: 1.2rem;
+        }
+
+        footer a:hover {
+            color: var(--accent-color);
+        }
+
+        .copyright {
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: var(--accent-color);
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--dark-color);
+        }
+
+        .stats-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--secondary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stats-pill i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        @media (max-width: 992px) {
+            .content-section {
+                padding: 120px 0 60px;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                flex-direction: column;
+            }
+
+            .stats-pill {
+                margin-bottom: 5px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light py-3 fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-tshirt me-2"></i>Apparel<span>Sync</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/view_inventory">Inventory</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/sales_report">Sales Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/low_stock">Low Stock</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/my_activity">My Activity</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/search">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Section -->
+    <section class="content-section">
+        <div class="container">
+            <h1 class="page-title">User Management</h1>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div class="users-card">
+                <div class="mb-4">
+                    <h3 class="mb-4"><i class="fas fa-users me-2"></i>System Users</h3>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Statistics</th>
+                                <th>Total Sales Value</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if user_stats %}
+                                {% for stat in user_stats %}
+                                    <tr>
+                                        <td>
+                                            <div class="user-info">
+                                                <div class="user-avatar">
+                                                    {{ stat.user.username[0].upper() }}
+                                                </div>
+                                                <div class="user-details">
+                                                    <h5>{{ stat.user.username }}</h5>
+                                                    <small>{{ stat.user.email }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="stats-container">
+                                                <span class="stats-pill">
+                                                    <i class="fas fa-box"></i> {{ stat.items_count }} Items
+                                                </span>
+                                                <span class="stats-pill">
+                                                    <i class="fas fa-shopping-cart"></i> {{ stat.sales_count }} Sales
+                                                </span>
+                                                <span class="stats-pill">
+                                                    <i class="fas fa-exclamation-triangle"></i> {{ stat.alerts_count }} Alerts
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="sales-value">${{ stat.total_sales_value | round(2) }}</span>
+                                        </td>
+                                        <td>
+                                            {% if stat.user.id == current_user.id %}
+                                                <span class="badge badge-stat badge-primary">Current User</span>
+                                            {% elif stat.sales_count > 0 %}
+                                                <span class="badge badge-stat badge-success">Active</span>
+                                            {% else %}
+                                                <span class="badge badge-stat badge-warning">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="no-users">
+                                            <i class="fas fa-users fa-3x mb-3"></i>
+                                            <h4>No users found</h4>
+                                            <p>System user information will appear here</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>User Information</h5>
+                            <p class="card-text">
+                                This page displays all registered users of the ApparelSync system. For each user, you can see their activity statistics including items added to inventory, sales recorded, and low stock alerts created.
+                            </p>
+                            <p class="card-text">
+                                <strong>Total Sales Value</strong> reflects the cumulative value of all sales recorded by each user, calculated after applying any discounts.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright mb-0">&copy; 2025 ApparelSync. All rights reserved.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="social-icons">
+                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

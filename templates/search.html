@@ -363,25 +363,30 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('view_inventory') }}">Inventory</a>
+                        <a class="nav-link" href="/dashboard/view_inventory">Inventory</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('sales_report') }}">Sales Report</a>
+                        <a class="nav-link" href="/dashboard/sales_report">Sales Report</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('low_stock') }}">Low Stock</a>
+                        <a class="nav-link" href="/dashboard/low_stock">Low Stock</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('search') }}">Search</a>
+                        <a class="nav-link" href="/dashboard/my_activity">My Activity</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link active" href="/dashboard/search">Search</a>
                     </li>
-                </ul>
-            </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>            </div>
         </div>
     </nav>
 

@@ -418,6 +418,46 @@
             color: var(--warning-color);
         }
 
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .search-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search-form input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border-radius: 30px 0 0 30px;
+            border: 2px solid var(--primary-color);
+            outline: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .search-form button {
+            background-color: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 0 30px 30px 0;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background-color: transparent;
+            color: var(--primary-color);
+        }
+
+        .last-updated {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
         @media (max-width: 992px) {
             .content-section {
                 padding: 120px 0 60px;
@@ -469,7 +509,13 @@
                         <a class="nav-link" href="/dashboard/low_stock">Low Stock</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/my_activity">My Activity</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/dashboard/search">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/users">Users</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">Logout</a>
@@ -483,6 +529,21 @@
     <section class="content-section">
         <div class="container">
             <h1 class="page-title">Inventory Management</h1>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
 
             <div class="inventory-card">
                 <div class="mb-4">
@@ -516,6 +577,7 @@
                                 <th>Price</th>
                                 <th>Discount</th>
                                 <th>Discounted Price</th>
+                                <th>Last Updated</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -527,12 +589,14 @@
                                         <td>{{ item.item_name }}</td>
                                         <td>
                                             {{ item.quantity }}
-                                            {% if item.quantity > 100 %}
+                                            {% if item.quantity >= 100 %}
                                                 <span class="badge badge-stock badge-high">High</span>
-                                            {% elif item.quantity > 50 %}
+                                            {% elif item.quantity >= 50 %}
                                                 <span class="badge badge-stock badge-medium">Medium</span>
+                                            {% elif item.quantity >= 10 %}
+                                                <span class="badge badge-stock badge-medium">Low</span>
                                             {% else %}
-                                                <span class="badge badge-stock badge-low">Low</span>
+                                                <span class="badge badge-stock badge-low">Critical</span>
                                             {% endif %}
                                         </td>
                                         <td>${{ item.price | round(2) }}</td>
@@ -544,6 +608,9 @@
                                             {% else %}
                                                 ${{ item.price | round(2) }}
                                             {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="last-updated">{{ item.last_updated.strftime('%Y-%m-%d %H:%M') if item.last_updated else 'N/A' }}</small>
                                         </td>
                                         <td>
                                             <div class="table-action-buttons">
@@ -565,7 +632,16 @@
                                 {% endfor %}
                             {% else %}
                                 <tr>
-                                    <td colspan="7" class="text-center">No inventory items found</td>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="no-items">
+                                            <i class="fas fa-box-open fa-3x mb-3"></i>
+                                            <h4>No inventory items found</h4>
+                                            <p>Start adding items to your inventory</p>
+                                            <a href="/dashboard/add_item" class="btn btn-add btn-action mt-3">
+                                                <i class="fas fa-plus me-2"></i>Add First Item
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>
                             {% endif %}
                         </tbody>

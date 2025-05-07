@@ -213,118 +213,6 @@
             color: var(--primary-color);
         }
 
-        .btn-edit {
-            background-color: var(--accent-color);
-            color: white;
-            border: 2px solid var(--accent-color);
-        }
-
-        .btn-edit:hover {
-            background-color: transparent;
-            color: var(--accent-color);
-        }
-
-        .btn-delete {
-            background-color: #e74a3b;
-            color: white;
-            border: 2px solid #e74a3b;
-        }
-
-        .btn-delete:hover {
-            background-color: transparent;
-            color: #e74a3b;
-        }
-
-        .btn-sale {
-            background-color: #1cc88a;
-            color: white;
-            border: 2px solid #1cc88a;
-        }
-
-        .btn-sale:hover {
-            background-color: transparent;
-            color: #1cc88a;
-        }
-
-        .btn-discount {
-            background-color: #f6c23e;
-            color: white;
-            border: 2px solid #f6c23e;
-        }
-
-        .btn-discount:hover {
-            background-color: transparent;
-            color: #f6c23e;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 10px;
-        }
-
-        footer {
-            background-color: #343a40;
-            color: white;
-            padding: 40px 0;
-        }
-
-        footer a {
-            color: rgba(255, 255, 255, 0.8);
-            transition: color 0.3s ease;
-            margin: 0 10px;
-            font-size: 1.2rem;
-        }
-
-        footer a:hover {
-            color: var(--accent-color);
-        }
-
-        .copyright {
-            opacity: 0.8;
-            font-weight: 300;
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .social-icons a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            background: var(--accent-color);
-            transform: translateY(-5px);
-            color: white;
-        }
-
-        .alert {
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
-
-        .no-items {
-            text-align: center;
-            padding: 40px 0;
-            color: var(--dark-color);
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        /* Sales Report Specific Styles */
         .stats-card {
             background: linear-gradient(135deg, var(--primary-color) 0%, #2e59d9 100%);
             color: white;
@@ -397,6 +285,19 @@
             height: 3px;
         }
 
+        .no-items {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--dark-color);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
         @media (max-width: 992px) {
             .content-section {
                 padding: 120px 0 60px;
@@ -432,25 +333,30 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('view_inventory') }}">Inventory</a>
+                        <a class="nav-link" href="/dashboard/view_inventory">Inventory</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('sales_report') }}">Sales Report</a>
+                        <a class="nav-link active" href="/dashboard/sales_report">Sales Report</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('low_stock') }}">Low Stock</a>
+                        <a class="nav-link" href="/dashboard/low_stock">Low Stock</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+                        <a class="nav-link" href="/dashboard/my_activity">My Activity</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                        <a class="nav-link" href="/dashboard/search">Search</a>
                     </li>
-                </ul>
-            </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/users">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>            </div>
         </div>
     </nav>
 
@@ -536,6 +442,7 @@
                                             <th>Units Sold</th>
                                             <th>Total Revenue</th>
                                             <th>Current Stock</th>
+                                            <th>Recorder</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -549,13 +456,14 @@
                                             <td>${{ "%.2f"|format(item_data.total_revenue) }}</td>
                                             <td>
                                                 {% if item_data.item.quantity > 20 %}
-                                                    <span class="badge badge-stock badge-high">High</span>
+                                                    <span class="badge badge-stock badge-high">{{ item_data.item.quantity }}</span>
                                                 {% elif item_data.item.quantity > 10 %}
-                                                    <span class="badge badge-stock badge-medium">Medium</span>
+                                                    <span class="badge badge-stock badge-medium">{{ item_data.item.quantity }}</span>
                                                 {% else %}
-                                                    <span class="badge badge-stock badge-low">Low</span>
+                                                    <span class="badge badge-stock badge-low">{{ item_data.item.quantity }}</span>
                                                 {% endif %}
                                             </td>
+                                            <td>{{ item_data.recorded_by }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -584,6 +492,7 @@
                                             <th>Discount</th>
                                             <th>Total</th>
                                             <th>Date</th>
+                                            <th>Recorded By</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -603,6 +512,7 @@
                                                 {% endif %}
                                             </td>
                                             <td><span class="sales-date">{{ sale.sale_date.strftime('%Y-%m-%d %H:%M') }}</span></td>
+                                            <td>{{ sale.recorded_by.username }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -622,19 +532,17 @@
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer class="mt-5 py-4 bg-dark">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="copyright mb-0">&copy; 2025 ApparelSync. All rights reserved.</p>
+                    <p class="text-white mb-0">&copy; 2025 ApparelSync. All rights reserved.</p>
                 </div>
-                <div class="col-md-6">
-                    <div class="social-icons">
-                        <a href="#" class="me-3"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-3"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
